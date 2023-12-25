@@ -61,6 +61,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     phone = models.TextField(max_length=255, unique=True)
     avatar = models.URLField(max_length=500, blank=True)
     enroll_number = models.PositiveIntegerField(unique=True, default=1)
+
+
+    created_at = models.DateTimeField(_('date joined'), auto_now_add=True)
+    last_login = models.DateTimeField(_('last login'), auto_now=True)
+
     is_active = models.BooleanField(_('active'), default=True)
     is_staff = models.BooleanField(_('staff_status'), default=False)
 

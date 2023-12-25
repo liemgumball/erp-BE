@@ -7,7 +7,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = CustomUser
-    fields = ['email', 'password', 'phone', 'name']
+    fields = ['email', 'password', 'phone', 'name','enroll_number']
   
   def create(self, validated_data):
     client = CustomUser.objects.create_user(**validated_data)
@@ -20,3 +20,8 @@ class LoginSerializer(serializers.ModelSerializer):
   class Meta:
     model = CustomUser
     fields = ['email', 'password']
+
+class UserSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = CustomUser
+    fields = "__all__"
