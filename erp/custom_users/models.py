@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin, Group, Permission
 from django.utils.translation import gettext_lazy as _
 
+
 class CustomUserManager(BaseUserManager):
     """
     Custom manager for the CustomUser model.
@@ -11,7 +12,7 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(self, email, password, **extra_fields):
         """
         Create and return a superuser with the given email and password.
-        
+
         @param {string} email - The email for the superuser.
         @param {string} password - The password for the superuser.
         @param {**extra_fields} - Additional fields for the superuser.
@@ -32,7 +33,7 @@ class CustomUserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
         """
         Create and return a regular user with the given email and password.
-        
+
         @param {string} email - The email for the user.
         @param {string} password - The password for the user.
         @param {**extra_fields} - Additional fields for the user.
@@ -50,6 +51,7 @@ class CustomUserManager(BaseUserManager):
         user.set_password(password)
         user.save()
         return user
+
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     """
@@ -70,8 +72,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(_('staff_status'), default=False)
 
     # Provide unique related_name arguments to avoid clashes
-    groups = models.ManyToManyField(Group, related_name='custom_user_groups',blank=True)
-    user_permissions = models.ManyToManyField(Permission, related_name='custom_user_permissions', blank=True)
+    groups = models.ManyToManyField(
+        Group, related_name='custom_user_groups', blank=True)
+    user_permissions = models.ManyToManyField(
+        Permission, related_name='custom_user_permissions', blank=True)
 
     objects = CustomUserManager()
 
@@ -83,7 +87,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         """
         String representation of the user object.
-        
+
         @returns {string} - The email of the user.
         """
         return self.name if self.name else self.email
+
+

@@ -9,6 +9,8 @@ from rest_framework import status
 from drf_yasg import openapi
 
 # Create your views here.
+
+
 class UserRegistration(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
@@ -20,13 +22,13 @@ class UserLogin(generics.GenericAPIView):
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
-        
+
         if serializer.is_valid():
             email = serializer.validated_data['email']
             password = serializer.validated_data['password']
             user = authenticate(
                 request=request, email=email, password=password)
-            
+
             if user:
                 token, created = Token.objects.get_or_create(user=user)
                 user = CustomUser.objects.get(email=email)
