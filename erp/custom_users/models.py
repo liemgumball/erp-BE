@@ -86,3 +86,5 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         @returns {string} - The email of the user.
         """
         return self.name if self.name else self.email
+
+

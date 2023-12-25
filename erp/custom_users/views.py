@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from .serializers import *
 
 # Create your views here.
+
+
 class UserRegistration(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
@@ -18,13 +20,13 @@ class UserLogin(generics.GenericAPIView):
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
-        
+
         if serializer.is_valid():
             email = serializer.validated_data['email']
             password = serializer.validated_data['password']
             user = authenticate(
                 request=request, email=email, password=password)
-            
+
             if user:
                 token, created = Token.objects.get_or_create(user=user)
                 user = CustomUser.objects.get(email=email)
@@ -38,3 +40,6 @@ class UserLogin(generics.GenericAPIView):
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
