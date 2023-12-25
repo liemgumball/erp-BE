@@ -61,9 +61,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email'), unique=True)
     name = models.CharField(max_length=50)
     phone = models.TextField(max_length=255, unique=True)
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-    last_login = models.DateTimeField(_('last login'), auto_now_add=True)
-
+    avatar = models.URLField(max_length=500, blank=True)
+    enroll_number = models.PositiveIntegerField(unique=True, default=1)
     is_active = models.BooleanField(_('active'), default=True)
     is_staff = models.BooleanField(_('staff_status'), default=False)
 
@@ -71,7 +70,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     groups = models.ManyToManyField(
         Group, related_name='custom_user_groups', blank=True)
     user_permissions = models.ManyToManyField(
-        Permission, related_name='custom_user_permissions')
+        Permission, related_name='custom_user_permissions', blank=True)
 
     objects = CustomUserManager()
 
@@ -87,22 +86,3 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         @returns {string} - The email of the user.
         """
         return self.name if self.name else self.email
-
-
-class Student(models.Model):
-    created_at = models.DateTimeField()
-    name = models.CharField(max_length=255)
-    avatar = models.URLField()
-    email = models.EmailField()
-    phone = models.CharField(max_length=20)
-    enroll_number = models.PositiveIntegerField()
-    id = models.PositiveIntegerField(primary_key=True)
-
-
-class Payment(models.Model):
-    created_at = models.DateTimeField()
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    bill_number = models.PositiveIntegerField()
-    paid = models.PositiveIntegerField()
-    balance = models.PositiveIntegerField()
-    id = models.PositiveIntegerField(primary_key=True)
