@@ -1,24 +1,27 @@
 from rest_framework import serializers
 from .models import *
 
-
 class RegisterSerializer(serializers.ModelSerializer):
-    email = serializers.CharField(required=True)
-    password = serializers.CharField(required=True, write_only=True)
+  email = serializers.CharField(required=True)
+  password = serializers.CharField(required=True, write_only=True)
+  class Meta:
+    model = CustomUser
+    fields = ['email', 'password', 'phone', 'name','enroll_number']
 
-    class Meta:
-        model = CustomUser
-        fields = ['email', 'password', 'phone', 'name']
-
-    def create(self, validated_data):
-        client = CustomUser.objects.create_user(**validated_data)
-        return client
+  def create(self, validated_data):
+    client = CustomUser.objects.create_user(**validated_data)
+    return client
 
 
 class LoginSerializer(serializers.ModelSerializer):
-    email = serializers.CharField(required=True)
-    password = serializers.CharField(required=True, write_only=True)
+  email = serializers.CharField(required=True)
+  password = serializers.CharField(required=True, write_only=True)
+  class Meta:
+    model = CustomUser
+    fields = ['email', 'password']
 
-    class Meta:
-        model = CustomUser
-        fields = ['email', 'password']
+
+class UserSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = CustomUser
+    fields = "__all__"
