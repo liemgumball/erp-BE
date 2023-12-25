@@ -12,3 +12,17 @@ class Payment(models.Model):
     paid = models.PositiveIntegerField()
     balance = models.PositiveIntegerField()
     id = models.PositiveIntegerField(primary_key=True)
+
+
+class Course(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    schedule = models.TextField()
+    # Add this field for the number of students
+    no_students = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
