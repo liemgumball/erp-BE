@@ -5,7 +5,6 @@ from rest_framework import status, permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from .serializers import *
-from rest_framework import status
 from drf_yasg import openapi
 
 # Create your views here.

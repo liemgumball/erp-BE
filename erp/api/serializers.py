@@ -8,7 +8,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Payment
-        fields = '__all__'
+        exclude = ['created_at']
 
 
 class CourseSerializer(serializers.ModelSerializer):
