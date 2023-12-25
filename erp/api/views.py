@@ -15,3 +15,12 @@ def payment_list(request):
     payments = Payment.objects.all()
     serializer = PaymentSerializer(payments, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([AllowAny])
+def course_list(request):
+    courses = Course.objects.all()
+    serializer = CourseSerializer(courses, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
