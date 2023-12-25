@@ -59,15 +59,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email'), unique=True)
     name = models.CharField(max_length=50)
     phone = models.TextField(max_length=255, unique=True)
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-    last_login = models.DateTimeField(_('last login'), auto_now_add=True)
-
+    avatar = models.URLField(max_length=500, blank=True)
+    enroll_number = models.PositiveIntegerField(unique=True, default=1)
     is_active = models.BooleanField(_('active'), default=True)
     is_staff = models.BooleanField(_('staff_status'), default=False)
 
     # Provide unique related_name arguments to avoid clashes
     groups = models.ManyToManyField(Group, related_name='custom_user_groups',blank=True)
-    user_permissions = models.ManyToManyField(Permission, related_name='custom_user_permissions')
+    user_permissions = models.ManyToManyField(Permission, related_name='custom_user_permissions', blank=True)
 
     objects = CustomUserManager()
 
