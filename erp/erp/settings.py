@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'custom_users',
     'api',
+    'vnpay',
+    'vnpay_python',
     'drf_yasg'
 ]
 
@@ -80,7 +82,7 @@ ROOT_URLCONF = 'erp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -92,6 +94,11 @@ TEMPLATES = [
         },
     },
 ]
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static/'),
+)
+STATIC_URL = '/static/'
 
 WSGI_APPLICATION = 'erp.wsgi.application'
 
@@ -157,3 +164,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
+VNPAY_TMN_CODE = 'J7ZQCOXO'
+VNPAY_HASH_SECRET_KEY = 'BZMIKJPKRVHMRTQJMRYPDJKFYEMFNKRI'
+VNPAY_PAYMENT_URL = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'
+VNPAY_RETURN_URL = 'http://127.0.0.1:8000/payments/payment_return'

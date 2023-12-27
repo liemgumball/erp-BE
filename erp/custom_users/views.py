@@ -10,7 +10,6 @@ from drf_yasg import openapi
 
 # Create your views here.
 
-
 class UserRegistration(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer

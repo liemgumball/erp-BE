@@ -38,5 +38,6 @@ urlpatterns = [
          name='schema-swagger-ui'),
     path('admin/', admin.site.urls),
     path('users/', include('custom_users.urls')),
-    path('api/', include('api.urls'))
+    path('api/', include('api.urls')),
+    path('payments/', include('vnpay_python.urls'))
 ]

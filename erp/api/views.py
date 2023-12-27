@@ -7,27 +7,27 @@ from .models import *
 from .serializers import *
 
 
-@swagger_auto_schema(
-    manual_parameters=[
-        openapi.Parameter('name_like', openapi.IN_QUERY,
-                          description="Search query", type=openapi.TYPE_STRING),
-        openapi.Parameter('_sort', openapi.IN_QUERY,
-                          description="Sort field", type=openapi.TYPE_STRING),
-        openapi.Parameter('_order', openapi.IN_QUERY,
-                          description="Sort order", type=openapi.TYPE_STRING),
-    ],
-    responses={
-        200: openapi.Response(description="OK", schema=openapi.Schema(type=openapi.TYPE_OBJECT)),
-        400: openapi.Response(description="Bad Request"),
-        401: openapi.Response(description="Unauthorized"),
-    },
-    operation_description="Your operation description here."
-)
 class PaymentListView(generics.ListAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [AllowAny]
     serializer_class = PaymentSerializer
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('name_like', openapi.IN_QUERY,
+                              description="Search query", type=openapi.TYPE_STRING),
+            openapi.Parameter('_sort', openapi.IN_QUERY,
+                              description="Sort field", type=openapi.TYPE_STRING),
+            openapi.Parameter('_order', openapi.IN_QUERY,
+                              description="Sort order", type=openapi.TYPE_STRING),
+        ],
+        responses={
+            200: openapi.Response(description="OK", schema=openapi.Schema(type=openapi.TYPE_OBJECT)),
+            400: openapi.Response(description="Bad Request"),
+            401: openapi.Response(description="Unauthorized"),
+        },
+        operation_description="Your operation description here."
+    )
     def get_queryset(self):
         payments = Payment.objects.all()
 
