@@ -24,6 +24,7 @@ class Course(models.Model):
     # Add this field for the number of students
     total_students = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
+    students = models.ManyToManyField(CustomUser, related_name='courses')
 
     def __str__(self):
         return self.name
