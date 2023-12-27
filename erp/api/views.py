@@ -1,6 +1,6 @@
-from rest_framework import generics
+from rest_framework import generics, status, permissions
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from .models import *
@@ -9,12 +9,12 @@ from .serializers import *
 
 class PaymentListView(generics.ListAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
     serializer_class = PaymentSerializer
 
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter('name_like', openapi.IN_QUERY,
+            openapi.Parameter('student_name_like', openapi.IN_QUERY,
                               description="Search query", type=openapi.TYPE_STRING),
             openapi.Parameter('_sort', openapi.IN_QUERY,
                               description="Sort field", type=openapi.TYPE_STRING),
@@ -28,15 +28,20 @@ class PaymentListView(generics.ListAPIView):
         },
         operation_description="Your operation description here."
     )
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def get_queryset(self):
         payments = Payment.objects.all()
 
-        search_query = self.request.query_params.get('name_like', None)
+        search_query = self.request.query_params.get('student_name_like', None)
         sort_by = self.request.query_params.get('_sort', 'id')
         order = self.request.query_params.get('_order', 'asc')
 
         if search_query:
-            payments = payments.filter(name__icontains=search_query)
+            payments = payments.filter(student__name__icontains=search_query)
 
         if sort_by:
             allowed_fields = [
@@ -50,6 +55,6 @@ class PaymentListView(generics.ListAPIView):
 
 class CourseListView(generics.ListAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
     queryset = Course.objects.all()
     serializer_class = CourseSerializer

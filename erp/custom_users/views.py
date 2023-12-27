@@ -1,11 +1,10 @@
-from django.shortcuts import render
+from drf_yasg.utils import swagger_auto_schema
 from django.contrib.auth import authenticate
 from rest_framework import generics
 from rest_framework import status, permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from .serializers import *
-from rest_framework import status
 from drf_yasg import openapi
 
 # Create your views here.
@@ -41,17 +40,20 @@ class UserLogin(generics.GenericAPIView):
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-from drf_yasg.utils import swagger_auto_schema
-class UserListView(generics.ListAPIView):
+
+
+class StudentListView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = UserSerializer
 
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter('name_like', openapi.IN_QUERY, description="Search query", type=openapi.TYPE_STRING),
-            openapi.Parameter('_sort', openapi.IN_QUERY, description="Sort field", type=openapi.TYPE_STRING),
-            openapi.Parameter('_order', openapi.IN_QUERY, description="Sort order", type=openapi.TYPE_STRING),
+            openapi.Parameter('name_like', openapi.IN_QUERY,
+                              description="Search query", type=openapi.TYPE_STRING),
+            openapi.Parameter('_sort', openapi.IN_QUERY,
+                              description="Sort field", type=openapi.TYPE_STRING),
+            openapi.Parameter('_order', openapi.IN_QUERY,
+                              description="Sort order", type=openapi.TYPE_STRING),
         ],
         responses={
             200: openapi.Response(description="OK", schema=openapi.Schema(type=openapi.TYPE_OBJECT)),
@@ -64,9 +66,9 @@ class UserListView(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-    
+
     def get_queryset(self):
-        queryset = CustomUser.objects.all()
+        queryset = CustomUser.objects.filter(is_staff=False)
         search_query = self.request.query_params.get('name_like', None)
         sort_by = self.request.query_params.get('_sort', 'id')
         order = self.request.query_params.get('_order', 'asc')
@@ -75,10 +77,16 @@ class UserListView(generics.ListAPIView):
             queryset = queryset.filter(name__icontains=search_query)
 
         if sort_by:
-            allowed_fields = [field.name for field in CustomUser._meta.get_fields()]
+            allowed_fields = [
+                field.name for field in CustomUser._meta.get_fields()]
             if sort_by in allowed_fields:
                 order_by_field = sort_by if order == 'asc' else f'-{sort_by}'
                 queryset = queryset.order_by(order_by_field)
 
         return queryset
 
+
+class UserUpdateView(generics.RetrieveUpdateAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = UserSerializer
+    queryset = CustomUser.objects.all()
