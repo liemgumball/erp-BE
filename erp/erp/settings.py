@@ -30,6 +30,7 @@ DEBUG = 'RENDER' not in os.environ
 ALLOWED_HOSTS = ['*']
 
 CORS_ALLOW_ALL_ORIGINS = True
+
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
@@ -38,6 +39,7 @@ CORS_ALLOW_METHODS = [
     "PUT",
     "PATCH",
 ]
+
 CORS_ALLOW_HEADERS = [
     "accept-encoding",
     "accept",
@@ -64,7 +66,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'custom_users',
     'api',
-    'drf_yasg'
+    'drf_yasg',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -76,6 +79,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'erp.urls'
