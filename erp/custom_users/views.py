@@ -43,7 +43,7 @@ class UserLogin(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserListView(generics.ListAPIView):
+class StudentListView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = UserSerializer
 
@@ -69,7 +69,7 @@ class UserListView(generics.ListAPIView):
         return Response(serializer.data)
 
     def get_queryset(self):
-        queryset = CustomUser.objects.all()
+        queryset = CustomUser.objects.filter(is_staff=False)
         search_query = self.request.query_params.get('name_like', None)
         sort_by = self.request.query_params.get('_sort', 'id')
         order = self.request.query_params.get('_order', 'asc')
