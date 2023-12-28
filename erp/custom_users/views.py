@@ -95,3 +95,20 @@ class UserUpdateView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         user_id = self.kwargs.get('pk')
         return self.queryset.get(pk=user_id)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        # Customize the response data
+        user_data = {
+            'id': instance.id,
+            'name': instance.name,
+            'email': instance.email,
+            'role': 'admin' if instance.is_staff else 'student',
+        }
+
+        return Response({'user': user_data}, status=status.HTTP_200_OK)
