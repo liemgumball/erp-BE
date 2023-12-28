@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework import generics, status, permissions
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
@@ -51,6 +52,40 @@ class PaymentListView(generics.ListAPIView):
                 payments = payments.order_by(order_by_field)
 
         return payments
+
+
+class AutoCreatePaymentView(generics.CreateAPIView):
+    serializer_class = PaymentSerializer
+
+    def create(self, request, *args, **kwargs):
+        course_id = self.kwargs.get('course_id')
+        course = Course.objects.get(pk=course_id)
+        students = course.students.all()
+
+        # Default amount or use the provided amount
+        amount = request.data.get('amount', 100)
+
+        payments_to_create = []
+
+        for student in students:
+            start_date = datetime.now()
+            end_date = start_date + timedelta(weeks=4)
+
+            payment_data = {
+                'student': student,
+                'course': course,
+                'start_date': start_date,
+                'end_date': end_date,
+                'amount': amount,
+            }
+
+            payments_to_create.append(payment_data)
+
+        # Create payments in bulk
+        Payment.objects.bulk_create([Payment(**data)
+                                    for data in payments_to_create])
+
+        return Response({'message': 'Payments created successfully.'}, status=status.HTTP_201_CREATED)
 
 
 class CourseListView(generics.ListAPIView):
