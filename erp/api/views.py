@@ -119,3 +119,39 @@ class SubjectCourseDetailView(generics.RetrieveAPIView):
         serializer = self.get_serializer(courses, many=True)
 
         return Response({'subject': subject.name, 'courses': serializer.data})
+
+
+class CourseCreateView(generics.CreateAPIView):
+    serializer_class = CourseSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        # Extract subject data from the request
+        subject_name = request.data.get('subject')
+
+        # Check if the subject name is provided
+        if subject_name:
+            # Check if the subject already exists
+            subject_instance, created = Subject.objects.get_or_create(
+                name=subject_name)
+        else:
+            # Handle the case where subject name is not provided
+            subject_instance = None
+            created = False  # Set created to False
+
+        # Update request data with the subject instance
+        request.data['subject'] = subject_instance.id if subject_instance else None
+
+        # Use the CourseSerializer to validate and create the course
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class SubjectListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Subject.objects.all()
+    serializer_class = SubjectSerializer
+    permission_classes = [permissions.AllowAny]

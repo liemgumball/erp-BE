@@ -9,4 +9,7 @@ urlpatterns = [
     path('subjects/', SubjectListView.as_view(), name='subject-list'),
     path('subject/<int:subject_id>/',
          SubjectCourseDetailView.as_view(), name='subject-course-detail'),
+    path('courses/add/', CourseCreateView.as_view(), name='course-create'),
+    path('subjects/add/', SubjectListCreateAPIView.as_view(),
+         name='subject-list-create'),
 ]

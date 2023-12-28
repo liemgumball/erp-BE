@@ -16,12 +16,13 @@ class Course(models.Model):
     name = models.CharField(max_length=255)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     description = models.TextField(blank=True, max_length=1000)
-    start_date = models.DateField(auto_now_add=True)
-    end_date = models.DateField()
+    start_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField()
     schedule = models.TextField()
     total_students = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
-    students = models.ManyToManyField(CustomUser, related_name='courses')
+    students = models.ManyToManyField(
+        CustomUser, related_name='courses', blank=True, null=True)
 
     def __str__(self):
         return self.name
