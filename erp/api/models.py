@@ -6,7 +6,7 @@ from custom_users.models import CustomUser
 
 
 class Subject(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.name
@@ -22,6 +22,7 @@ class Course(models.Model):
     total_students = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
     students = models.ManyToManyField(CustomUser, related_name='courses')
+    video = models.CharField(max_length=255, default='kAM1PulT0Ns')
 
     def __str__(self):
         return self.name

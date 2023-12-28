@@ -74,13 +74,28 @@ class SubjectCourseDetailView(generics.RetrieveAPIView):
     queryset = Course.objects.all()
 
     def retrieve(self, request, *args, **kwargs):
-        subject_id = self.kwargs.get('subject_id')
+        name = self.kwargs.get('name')
         try:
-            subject = Subject.objects.get(pk=subject_id)
+            subject = Subject.objects.get(name=name)
         except Subject.DoesNotExist:
             return Response({'error': 'Subject not found'}, status=status.HTTP_404_NOT_FOUND)
 
         courses = Course.objects.filter(subject=subject)
         serializer = self.get_serializer(courses, many=True)
 
-        return Response({'subject': subject.name, 'courses': serializer.data})
+        return Response({'name': subject.name, 'courses': serializer.data})
+
+
+class CourseDetailView(generics.RetrieveAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [permissions.AllowAny]
+    serializer_class = CourseSerializer
+    queryset = Course.objects.all()
+
+    def retrieve(self, request, *args, **kwargs):
+        course_id = self.kwargs.get('pk')
+        try:
+            course = Course.objects.get(pk=course_id)
+        except Course.DoesNotExist:
+            return Response({'error': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
+        return super().retrieve(request, *args, **kwargs)
