@@ -1,3 +1,5 @@
+
+from rest_framework.views import APIView
 from datetime import datetime
 from rest_framework import generics, status, permissions
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -155,3 +157,31 @@ class SubjectListCreateAPIView(generics.ListCreateAPIView):
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
     permission_classes = [permissions.AllowAny]
+
+
+class EnrollCourseView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        student_id = request.data.get('student_id')
+        course_id = request.data.get('course_id')
+
+        try:
+            student = CustomUser.objects.get(pk=student_id)
+            course = Course.objects.get(pk=course_id)
+
+            # Check if the student is not already enrolled in the course
+            if student not in course.students.all():
+                course.students.add(student)
+                course.total_students += 1
+                course.save()
+
+                return Response({"message": "Enrollment successful"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "Student is already enrolled in the course"}, status=status.HTTP_400_BAD_REQUEST)
+
+        except CustomUser.DoesNotExist:
+            return Response({"message": "Student not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        except Course.DoesNotExist:
+            return Response({"message": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
