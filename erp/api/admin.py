@@ -3,4 +3,5 @@ from .models import *
 
 # Register your models here.
 admin.site.register(Payment)
+admin.site.register(Subject)
 admin.site.register(Course)
