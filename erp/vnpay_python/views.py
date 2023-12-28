@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404
 from django.conf import settings
 from .vnpay import vnpay
 from datetime import datetime
@@ -9,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from api.models import *
 # Create your views here.
 
 
@@ -68,7 +70,7 @@ class payment(APIView):
             vnpay_payment_url = vnp.get_payment_url(
                 settings.VNPAY_PAYMENT_URL, settings.VNPAY_HASH_SECRET_KEY)
             print(vnpay_payment_url)
-            return redirect(vnpay_payment_url)
+            return Response({"payment_url": vnpay_payment_url}, status=status.HTTP_200_OK)
         else:
             print("Form input not validated")
             return Response({"error": "Form input not validated"}, status=status.HTTP_400_BAD_REQUEST)
@@ -90,12 +92,20 @@ def payment_return(request):
         vnp_CardType = inputData['vnp_CardType']
         if vnp.validate_response(settings.VNPAY_HASH_SECRET_KEY):
             if vnp_ResponseCode == "00":
+
+                # Save to database
+                payment = get_object_or_404(Payment, id=int(order_desc))
+                payment.paid = True
+                payment.paid_at = datetime.now()
+                payment.save()
+
                 return render(request, "payment_return.html", {"title": "Kết quả thanh toán",
                                                                "result": "Thành công", "order_id": order_id,
                                                                "amount": amount,
                                                                "order_desc": order_desc,
                                                                "vnp_TransactionNo": vnp_TransactionNo,
                                                                "vnp_ResponseCode": vnp_ResponseCode})
+
             else:
                 return render(request, "payment_return.html", {"title": "Kết quả thanh toán",
                                                                "result": "Lỗi", "order_id": order_id,

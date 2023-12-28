@@ -27,7 +27,7 @@ class Payment(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField(blank=True, null=True)
     paid = models.BooleanField(default=False)
-    paid_amount = models.PositiveIntegerField(default=0)
+    amount = models.PositiveIntegerField()
 
     def save(self, *args, **kwargs):
         # Calculate end_date four weeks after start_date
