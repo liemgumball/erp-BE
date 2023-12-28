@@ -9,6 +9,7 @@ from drf_yasg import openapi
 
 # Create your views here.
 
+
 class UserRegistration(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
@@ -90,3 +91,7 @@ class UserUpdateView(generics.RetrieveUpdateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = UserSerializer
     queryset = CustomUser.objects.all()
+
+    def get_object(self):
+        user_id = self.kwargs.get('pk')
+        return self.queryset.get(pk=user_id)
