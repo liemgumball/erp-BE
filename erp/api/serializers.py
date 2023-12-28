@@ -3,15 +3,16 @@ from .models import *
 from custom_users.serializers import UserSerializer
 
 
-class PaymentSerializer(serializers.ModelSerializer):
-    student = UserSerializer()
-
-    class Meta:
-        model = Payment
-        exclude = ['created_at']
-
-
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
+        fields = '__all__'
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    student = UserSerializer()
+    course = CourseSerializer()
+
+    class Meta:
+        model = Payment
         fields = '__all__'

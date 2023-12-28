@@ -1,5 +1,5 @@
 from django.db import models
-
+from datetime import timedelta
 from custom_users.models import CustomUser
 
 # Create your models here.
@@ -7,11 +7,11 @@ from custom_users.models import CustomUser
 
 class Course(models.Model):
     name = models.CharField(max_length=255)
+    subject = models.CharField(max_length=255)
     description = models.TextField(blank=True, max_length=1000)
     start_date = models.DateField()
     end_date = models.DateField()
     schedule = models.TextField()
-    # Add this field for the number of students
     total_students = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
     students = models.ManyToManyField(CustomUser, related_name='courses')
@@ -21,10 +21,21 @@ class Course(models.Model):
 
 
 class Payment(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
+    paid_at = models.DateTimeField(blank=True, null=True)
     student = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    bill_number = models.PositiveIntegerField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField(blank=True, null=True)
     paid = models.BooleanField(default=False)
     paid_amount = models.PositiveIntegerField(default=0)
-    id = models.PositiveIntegerField(primary_key=True)
+
+    def save(self, *args, **kwargs):
+        # Calculate end_date four weeks after start_date
+        if self.start_date:
+            self.end_date = self.start_date + timedelta(weeks=4)
+
+        # Set paid to True if paid_at is provided
+        if self.paid_at:
+            self.paid = True
+
+        super().save(*args, **kwargs)
