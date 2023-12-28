@@ -5,11 +5,18 @@ from custom_users.models import CustomUser
 # Create your models here.
 
 
+class Subject(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
 class Course(models.Model):
     name = models.CharField(max_length=255)
-    subject = models.CharField(max_length=255)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     description = models.TextField(blank=True, max_length=1000)
-    start_date = models.DateField()
+    start_date = models.DateField(auto_now_add=True)
     end_date = models.DateField()
     schedule = models.TextField()
     total_students = models.PositiveIntegerField(default=0)
@@ -24,7 +31,7 @@ class Payment(models.Model):
     paid_at = models.DateTimeField(blank=True, null=True)
     student = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    start_date = models.DateTimeField()
+    start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(blank=True, null=True)
     paid = models.BooleanField(default=False)
     amount = models.PositiveIntegerField()
