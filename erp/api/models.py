@@ -24,7 +24,7 @@ class Payment(models.Model):
     paid_at = models.DateTimeField(blank=True, null=True)
     student = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    start_date = models.DateTimeField()
+    start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(blank=True, null=True)
     paid = models.BooleanField(default=False)
     amount = models.PositiveIntegerField()
