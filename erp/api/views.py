@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework import generics, status, permissions
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
@@ -53,6 +54,40 @@ class PaymentListView(generics.ListAPIView):
         return payments
 
 
+class AutoCreatePaymentView(generics.CreateAPIView):
+    serializer_class = PaymentSerializer
+
+    def create(self, request, *args, **kwargs):
+        course_id = self.kwargs.get('course_id')
+        course = Course.objects.get(pk=course_id)
+        students = course.students.all()
+
+        # Default amount or use the provided amount
+        amount = request.data.get('amount', 100)
+
+        payments_to_create = []
+
+        for student in students:
+            start_date = datetime.now()
+            end_date = start_date + timedelta(weeks=4)
+
+            payment_data = {
+                'student': student,
+                'course': course,
+                'start_date': start_date,
+                'end_date': end_date,
+                'amount': amount,
+            }
+
+            payments_to_create.append(payment_data)
+
+        # Create payments in bulk
+        Payment.objects.bulk_create([Payment(**data)
+                                    for data in payments_to_create])
+
+        return Response({'message': 'Payments created successfully.'}, status=status.HTTP_201_CREATED)
+
+
 class CourseListView(generics.ListAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [permissions.AllowAny]
@@ -99,3 +134,40 @@ class CourseDetailView(generics.RetrieveAPIView):
         except Course.DoesNotExist:
             return Response({'error': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
         return super().retrieve(request, *args, **kwargs)
+        return Response({'subject': subject.name, 'courses': serializer.data})
+
+
+class CourseCreateView(generics.CreateAPIView):
+    serializer_class = CourseSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        # Extract subject data from the request
+        subject_name = request.data.get('subject')
+
+        # Check if the subject name is provided
+        if subject_name:
+            # Check if the subject already exists
+            subject_instance, created = Subject.objects.get_or_create(
+                name=subject_name)
+        else:
+            # Handle the case where subject name is not provided
+            subject_instance = None
+            created = False  # Set created to False
+
+        # Update request data with the subject instance
+        request.data['subject'] = subject_instance.id if subject_instance else None
+
+        # Use the CourseSerializer to validate and create the course
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class SubjectListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Subject.objects.all()
+    serializer_class = SubjectSerializer
+    permission_classes = [permissions.AllowAny]
