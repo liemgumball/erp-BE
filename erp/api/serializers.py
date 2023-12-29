@@ -18,7 +18,6 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
-        depth = 1
 
 
 class PaymentSerializer(serializers.ModelSerializer):
@@ -27,4 +26,21 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Payment
+        fields = '__all__'
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    student = UserSerializer()
+
+    class Meta:
+        model = Report
+        fields = '__all__'
+
+
+class ReportWriteOnlyStudentSerializer(serializers.ModelSerializer):
+    student = serializers.PrimaryKeyRelatedField(
+        queryset=CustomUser.objects.all())
+
+    class Meta:
+        model = Report
         fields = '__all__'

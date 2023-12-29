@@ -47,3 +47,16 @@ class Payment(models.Model):
             self.paid = True
 
         super().save(*args, **kwargs)
+
+
+class Report(models.Model):
+    student = models.ForeignKey(
+        CustomUser, on_delete=models.SET_NULL, null=True)
+    title = models.CharField(max_length=255, blank=True)
+    description = models.CharField(max_length=500, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self, *args, **kwargs):
+        return f"{self.student}: {self.created_at.strftime('%Y-%m-%d %H:%M:%S')}"
