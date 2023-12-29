@@ -15,6 +15,8 @@ class SubjectSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    students = UserSerializer(many=True, read_only=True)
+
     class Meta:
         model = Course
         fields = '__all__'
