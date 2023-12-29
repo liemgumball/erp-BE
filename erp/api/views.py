@@ -1,4 +1,7 @@
 
+from .serializers import CourseSerializer
+from .models import Subject, Course
+from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from datetime import datetime
 from rest_framework import generics, status, permissions
@@ -112,12 +115,21 @@ class SubjectCourseDetailView(generics.RetrieveAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         name = self.kwargs.get('name')
+        user_id = self.request.query_params.get('userId')
+
         try:
-            subject = Subject.objects.get(name=name)
+            if not user_id:
+                subject = Subject.objects.get(name=name)
+                courses = Course.objects.filter(subject=subject)
+            else:
+                user_courses = Course.objects.filter(students__id=user_id)
+                subject = Subject.objects.filter(
+                    course__in=user_courses).distinct().first()
+                courses = Course.objects.filter(
+                    subject=subject, students__id=user_id)
         except Subject.DoesNotExist:
             return Response({'error': 'Subject not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        courses = Course.objects.filter(subject=subject)
         serializer = self.get_serializer(courses, many=True)
 
         return Response({'name': subject.name, 'courses': serializer.data})
@@ -136,7 +148,6 @@ class CourseDetailView(generics.RetrieveAPIView):
         except Course.DoesNotExist:
             return Response({'error': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
         return super().retrieve(request, *args, **kwargs)
-        return Response({'subject': subject.name, 'courses': serializer.data})
 
 
 class CourseCreateView(generics.CreateAPIView):
