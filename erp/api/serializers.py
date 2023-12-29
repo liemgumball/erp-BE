@@ -18,7 +18,6 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
-        depth = 1
 
 
 class PaymentSerializer(serializers.ModelSerializer):
