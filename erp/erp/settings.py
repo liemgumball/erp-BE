@@ -186,4 +186,4 @@ REST_FRAMEWORK = {
 VNPAY_TMN_CODE = 'J7ZQCOXO'
 VNPAY_HASH_SECRET_KEY = 'BZMIKJPKRVHMRTQJMRYPDJKFYEMFNKRI'
 VNPAY_PAYMENT_URL = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'
-VNPAY_RETURN_URL = 'http://127.0.0.1:8000/payments/payment_return'
+VNPAY_RETURN_URL = 'https://erp-pe.onrender.com/payments/payment_return'
