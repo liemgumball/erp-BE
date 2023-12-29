@@ -58,6 +58,7 @@ class PaymentListView(generics.ListAPIView):
 
 class AutoCreatePaymentView(generics.CreateAPIView):
     serializer_class = PaymentSerializer
+    permission_classes = [permissions.AllowAny]
 
     def create(self, request, *args, **kwargs):
         course_id = self.kwargs.get('course_id')
@@ -66,13 +67,12 @@ class AutoCreatePaymentView(generics.CreateAPIView):
 
         # Default amount or use the provided amount
         amount = request.data.get('amount', 100)
+        start_date = datetime.fromisoformat(request.data.get('start_date'))
+        end_date = start_date + timedelta(weeks=4)
 
         payments_to_create = []
 
         for student in students:
-            start_date = datetime.now()
-            end_date = start_date + timedelta(weeks=4)
-
             payment_data = {
                 'student': student,
                 'course': course,

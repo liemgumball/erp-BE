@@ -21,7 +21,8 @@ class Course(models.Model):
     schedule = models.TextField()
     total_students = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
-    students = models.ManyToManyField(CustomUser, related_name='courses')
+    students = models.ManyToManyField(
+        CustomUser, related_name='courses', blank=True, null=True)
     video = models.CharField(max_length=255, default='kAM1PulT0Ns')
 
     def __str__(self):
