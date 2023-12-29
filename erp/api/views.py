@@ -212,3 +212,41 @@ class EnrollCourseView(APIView):
 
         except Course.DoesNotExist:
             return Response({"message": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ReportListView(generics.ListAPIView):
+    serializer_class = ReportSerializer
+    permission_classes = [permissions.AllowAny]
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('student_name_like', openapi.IN_QUERY,
+                              description="Search query", type=openapi.TYPE_STRING),
+        ],
+        responses={
+            200: openapi.Response(description="OK", schema=openapi.Schema(type=openapi.TYPE_OBJECT)),
+            400: openapi.Response(description="Bad Request"),
+            401: openapi.Response(description="Unauthorized"),
+        },
+        operation_description="Your operation description here."
+    )
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        reports = Report.objects.all()
+
+        search_query = self.request.query_params.get('student_name_like', None)
+
+        if search_query:
+            reports = reports.filter(student__name__icontains=search_query)
+
+        return reports
+
+
+class ReportCreateView(generics.CreateAPIView):
+    serializer_class = ReportWriteOnlyStudentSerializer
+    permission_classes = [permissions.AllowAny]
+    queryset = Report.objects.all()
