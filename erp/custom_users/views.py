@@ -6,6 +6,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from .serializers import *
 from drf_yasg import openapi
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
@@ -88,10 +90,28 @@ class StudentListView(generics.ListAPIView):
 
 
 class UserUpdateView(generics.RetrieveUpdateAPIView):
-    permission_classes = [permissions.AllowAny]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     serializer_class = UserSerializer
-    queryset = CustomUser.objects.all()
+
+    def get_queryset(self):
+        return CustomUser.objects.all()
 
     def get_object(self):
         user_id = self.kwargs.get('pk')
-        return self.queryset.get(pk=user_id)
+        return self.get_queryset().get(pk=user_id)
+
+    def update(self, request, *args, **kwargs):
+        # Check if the authenticated user is the owner of the profile
+        user_id = kwargs.get('pk')
+        if request.user.id != int(user_id):
+            forbidden_reason = 'You do not have permission to perform this action.'
+            print(f'Forbidden: {forbidden_reason}')
+            return Response({'error': forbidden_reason}, status=status.HTTP_403_FORBIDDEN)
+
+        return super().update(request, *args, **kwargs)
+
+    def perform_update(self, serializer):
+        # You may want to customize how the update is performed if needed
+        serializer.save()
